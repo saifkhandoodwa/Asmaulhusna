@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Asma Ul Husna Spinner</title>
+  <style>
+    body {
+      background-color: #111;
+      color: white;
+      text-align: center;
+      font-family: 'Arial';
+      margin: 0;
+      padding: 0;
+    }
+    canvas {
+      margin-top: 20px;
+      border-radius: 50%;
+      background-color: #fff;
+    }
+    button {
+      margin-top: 20px;
+      padding: 10px 20px;
+      font-size: 18px;
+      border-radius: 10px;
+      border: none;
+      background-color: #28a745;
+      color: white;
+      cursor: pointer;
+    }
+    h1 {
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Asma Ul Husna - 99 Names of Allah</h1>
+  <canvas id="wheel" width="600" height="600"></canvas><br>
+  <button onclick="spin()">Spin</button>
+
+  <script>
+    const canvas = document.getElementById("wheel");
+    const ctx = canvas.getContext("2d");
+    const centerX = canvas.width / 2;
+    const centerY = canvas.height / 2;
+    const radius = 280;
+    const names = [
+      "Ar-Rahman", "Ar-Rahim", "Al-Malik", "Al-Quddus", "As-Salam", "Al-Mu’min", "Al-Muhaymin",
+      "Al-Aziz", "Al-Jabbar", "Al-Mutakabbir", "Al-Khaliq", "Al-Bari", "Al-Musawwir", "Al-Ghaffar",
+      "Al-Qahhar", "Al-Wahhab", "Ar-Razzaq", "Al-Fattah", "Al-`Alim", "Al-Qabid", "Al-Basit",
+      "Al-Khafid", "Ar-Rafi", "Al-Mu’izz", "Al-Mudhill", "As-Sami", "Al-Basir", "Al-Hakam",
+      "Al-`Adl", "Al-Latif", "Al-Khabir", "Al-Halim", "Al-`Azim", "Al-Ghafur", "Ash-Shakur",
+      "Al-`Aliyy", "Al-Kabir", "Al-Hafiz", "Al-Muqit", "Al-Hasib", "Al-Jalil", "Al-Karim",
+      "Ar-Raqib", "Al-Mujib", "Al-Wasi", "Al-Hakim", "Al-Wadud", "Al-Majid", "Al-Ba’ith",
+      "Ash-Shahid", "Al-Haqq", "Al-Wakil", "Al-Qawiyy", "Al-Matin", "Al-Waliyy", "Al-Hamid",
+      "Al-Muhsi", "Al-Mubdi", "Al-Mu’id", "Al-Muhyi", "Al-Mumit", "Al-Hayy", "Al-Qayyum",
+      "Al-Wajid", "Al-Majid", "Al-Wahid", "As-Samad", "Al-Qadir", "Al-Muqtadir", "Al-Muqaddim",
+      "Al-Mu’akhkhir", "Al-Awwal", "Al-Akhir", "Az-Zahir", "Al-Batin", "Al-Wali", "Al-Muta’ali",
+      "Al-Barr", "At-Tawwab", "Al-Muntaqim", "Al-‘Afuww", "Ar-Ra’uf", "Malik-al-Mulk", "Dhul-Jalali Wal-Ikram",
+      "Al-Muqsit", "Al-Jami", "Al-Ghaniyy", "Al-Mughni", "Al-Mani", "Ad-Darr", "An-Nafi",
+      "An-Nur", "Al-Hadi", "Al-Badi", "Al-Baqi", "Al-Warith", "Ar-Rashid", "As-Sabur"
+    ];
+    const sections = names.length;
+    const angle = (2 * Math.PI) / sections;
+    let currentAngle = 0;
+
+    const colors = ["#FFDDC1", "#FFABAB", "#FFC3A0", "#FF677D", "#D4A5A5", "#392F5A"];
+
+    function drawWheel() {
+      for (let i = 0; i < sections; i++) {
+        ctx.beginPath();
+        ctx.moveTo(centerX, centerY);
+        ctx.fillStyle = colors[i % colors.length];
+        ctx.arc(centerX, centerY, radius, i * angle, (i + 1) * angle);
+        ctx.lineTo(centerX, centerY);
+        ctx.fill();
+
+        // Label
+        ctx.save();
+        ctx.translate(centerX, centerY);
+        ctx.rotate(i * angle + angle / 2);
+        ctx.textAlign = "right";
+        ctx.fillStyle = "black";
+        ctx.font = "12px Arial";
+        ctx.fillText(names[i], radius - 10, 5);
+        ctx.restore();
+      }
+    }
+
+    function spin() {
+      let spins = Math.floor(Math.random() * 5 + 5); 
+      let extraAngle = Math.random() * 2 * Math.PI;
+      let totalRotation = spins * 2 * Math.PI + extraAngle;
+
+      const duration = 4000;
+      const start = performance.now();
+
+      function animate(time) {
+        let progress = (time - start) / duration;
+        if (progress > 1) progress = 1;
+
+        let easedProgress = 1 - Math.pow(1 - progress, 4);
+        currentAngle = totalRotation * easedProgress;
+
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.save();
+        ctx.translate(centerX, centerY);
+        ctx.rotate(currentAngle);
+        ctx.translate(-centerX, -centerY);
+        drawWheel();
+        ctx.restore();
+
+        if (progress < 1) {
+          requestAnimationFrame(animate);
+        } else {
+          const selected = Math.floor(((2 * Math.PI - (currentAngle % (2 * Math.PI))) % (2 * Math.PI)) / angle);
+          alert(`Selected Name: ${names[selected]}`);
+        }
+      }
+
+      requestAnimationFrame(animate);
+    }
+
+    drawWheel();
+  </script>
+</body>
+</html>
